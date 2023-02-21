@@ -1,0 +1,211 @@
+<!DOCTYPE model>
+<Option type="Map">
+  <Option name="children" type="Map">
+    <Option name="pyrocessing:pythonalgorithm_1" type="Map">
+      <Option name="active" value="true" type="bool"/>
+      <Option name="alg_config"/>
+      <Option name="alg_id" value="pyrocessing:pythonalgorithm" type="QString"/>
+      <Option name="color" value="" type="QString"/>
+      <Option name="comment" type="Map">
+        <Option name="color" value="" type="QString"/>
+        <Option name="component_description" value="" type="QString"/>
+        <Option name="component_height" value="60" type="double"/>
+        <Option name="component_pos_x" value="796" type="double"/>
+        <Option name="component_pos_y" value="467" type="double"/>
+        <Option name="component_width" value="100" type="double"/>
+        <Option name="outputs_collapsed" value="true" type="bool"/>
+        <Option name="parameters_collapsed" value="true" type="bool"/>
+      </Option>
+      <Option name="component_description" value="Execute Python script" type="QString"/>
+      <Option name="component_height" value="30" type="double"/>
+      <Option name="component_pos_x" value="596" type="double"/>
+      <Option name="component_pos_y" value="512" type="double"/>
+      <Option name="component_width" value="200" type="double"/>
+      <Option name="dependencies"/>
+      <Option name="id" value="pyrocessing:pythonalgorithm_1" type="QString"/>
+      <Option name="outputs" type="Map">
+        <Option name="Sortie" type="Map">
+          <Option name="child_id" value="pyrocessing:pythonalgorithm_1" type="QString"/>
+          <Option name="color" value="" type="QString"/>
+          <Option name="comment" type="Map">
+            <Option name="color" value="" type="QString"/>
+            <Option name="component_description" value="" type="QString"/>
+            <Option name="component_height" value="60" type="double"/>
+            <Option name="component_pos_x" value="0" type="double"/>
+            <Option name="component_pos_y" value="0" type="double"/>
+            <Option name="component_width" value="100" type="double"/>
+            <Option name="outputs_collapsed" value="true" type="bool"/>
+            <Option name="parameters_collapsed" value="true" type="bool"/>
+          </Option>
+          <Option name="component_description" value="Sortie" type="QString"/>
+          <Option name="component_height" value="30" type="double"/>
+          <Option name="component_pos_x" value="602.6666666666667" type="double"/>
+          <Option name="component_pos_y" value="653" type="double"/>
+          <Option name="component_width" value="200" type="double"/>
+          <Option name="default_value" type="invalid"/>
+          <Option name="mandatory" value="false" type="bool"/>
+          <Option name="name" value="Sortie" type="QString"/>
+          <Option name="output_name" value="file_output" type="QString"/>
+          <Option name="outputs_collapsed" value="true" type="bool"/>
+          <Option name="parameters_collapsed" value="true" type="bool"/>
+        </Option>
+      </Option>
+      <Option name="outputs_collapsed" value="true" type="bool"/>
+      <Option name="parameters_collapsed" value="true" type="bool"/>
+      <Option name="params" type="Map">
+        <Option name="inputs" type="List">
+          <Option type="Map">
+            <Option name="parameter_name" value="branches" type="QString"/>
+            <Option name="source" value="0" type="int"/>
+          </Option>
+          <Option type="Map">
+            <Option name="parameter_name" value="carrefour" type="QString"/>
+            <Option name="source" value="0" type="int"/>
+          </Option>
+          <Option type="Map">
+            <Option name="parameter_name" value="crossings" type="QString"/>
+            <Option name="source" value="0" type="int"/>
+          </Option>
+        </Option>
+        <Option name="script" type="List">
+          <Option type="Map">
+            <Option name="source" value="2" type="int"/>
+            <Option name="static_value" value="from pyrealb import *&#xa;import json&#xa;&#xa;loadFr()&#xa;&#xa;carrefour = inputs[1]&#xa;branches = inputs[0]&#xa;crossings = inputs[2]&#xa;&#xa;file = open(file_output, &quot;w&quot;)&#xa;&#xa;# carrefour style&#xa;for feature in carrefour.getFeatures():&#xa;  nb_branch = feature.attributes()[0]&#xa;  names = feature.attributes()[1].split(&quot;,&quot;)&#xa;  phrase = S(&quot;Le carrefour à l'intersection&quot;)&#xa;  et = CP(C(&quot;et&quot;))&#xa;  for name in names:&#xa;    name = name.split(&quot; &quot;)&#xa;    type = name.pop(0)&#xa;    type = type.lower()&#xa;    name = &quot; &quot;.join(name)&#xa;    et.add(&#xa;      PP(&#xa;        P(&quot;de&quot;),&#xa;        D(&quot;le&quot;),&#xa;        N(type),&#xa;        name&#xa;      )&#xa;    )&#xa;  phrase.add(et)&#xa;  phrase.add(&quot;est un carrefour à %s branches&quot;%nb_branch)&#xa;  file.write(str(phrase))&#xa;  file.write(&quot;&lt;br/>&lt;br/>&quot;)&#xa;  &#xa;&#xa;# branch style&#xa;for feature in branches.getFeatures():&#xa;  number = feature.attributes()[0]&#xa;  name = feature.attributes()[1]&#xa;  lanes_agg = json.loads(feature.attributes()[3])&#xa;  phrase = S(&quot;La branche numéro&quot;,  NO(number).nat(True), &quot;qui s'appelle&quot;, name, &quot;est composée&quot;)&#xa;  et_global = CP(C(&quot;et&quot;))&#xa;  for lanes in lanes_agg:&#xa;    direction = lanes[&quot;direction&quot;]&#xa;    lanes = lanes[&quot;lanes&quot;]&#xa;    et_lanes = CP(C(&quot;et&quot;))&#xa;    for lane in lanes:&#xa;      et_lanes.add( NP( P(&quot;de&quot;),  NO(lane[0]).nat(True), N(&quot;voie&quot;), P(&quot;de&quot;), N(lane[1]) ) )&#xa;    et_global.add( NP ( et_lanes, A(direction) ) )&#xa;  phrase.add(et_global)&#xa;&#xa;  file.write(str(phrase))&#xa;  file.write(&quot;&lt;br/>&lt;br/>&quot;)&#xa;&#xa;# crossings style&#xa;for feature in crossings.getFeatures():&#xa;    branche = feature.attributes()[1]&#xa;    tactile_paving = feature.attributes()[2]&#xa;    traffic_light = feature.attributes()[3]&#xa;    sound = feature.attributes()[4]&#xa;    length = feature.attributes()[5]&#xa;    phrase = S(&quot;La branche numéro&quot;,  NO(branche).nat(True), &quot;se traverse en&quot;, NP(NO(length).nat(True), N(&quot;fois&quot;)))&#xa;    file.write(str(phrase)+&quot; &quot;)&#xa;    phrase = S(&quot;Les passages piéton&quot;)&#xa;    if traffic_light == &quot;complet&quot; : phrase.add(&quot;sont tous protégés par un feu&quot;)&#xa;    elif traffic_light == &quot;incomplet&quot; : phrase.add(&quot;ne sont pas tous protégés par un feu&quot;)&#xa;    else : phrase.add(&quot;ne sont pas protégés par des feux&quot;)&#xa;    file.write(str(phrase)+&quot; &quot;)&#xa;    if sound  == &quot;complet&quot; : phrase = S(&quot;Les feux ont tous une balise sonore&quot;)&#xa;    elif sound  == &quot;incomplet&quot; : phrase = S(&quot;Les feux n'ont pas tous une balise sonore&quot;)&#xa;    else : phrase = S(&quot;Les feux ne sont pas sonores&quot;)&#xa;    file.write(str(phrase)+&quot; &quot;)&#xa;    phrase = S(&quot;Ils&quot;)&#xa;    if tactile_paving == &quot;complet&quot; : phrase.add(&quot;ont tous des bandes d'éveil de vigilance&quot;)&#xa;    elif tactile_paving == &quot;incomplet&quot; : phrase.add(&quot;n'ont pas tous des bandes d'éveil de vigilance&quot;)&#xa;    else : phrase.add(&quot;n'ont pas de bandes d'éveil de vigilance&quot;)&#xa;    file.write(str(phrase)+&quot;&lt;br/>&lt;br/>&quot;)&#xa;&#xa;file.close()" type="QString"/>
+          </Option>
+        </Option>
+      </Option>
+    </Option>
+  </Option>
+  <Option name="designerParameterValues" type="Map">
+    <Option name="branches" value="Calcul__99abea63_51c3_478f_a4f1_449603a2bc4e" type="QString"/>
+    <Option name="carrefour" value="Sortie_SQL_153778ed_bd14_4a5a_8fdf_b93d13346be7" type="QString"/>
+    <Option name="crossings" value="Couche_refactoris_e_b30594c9_5a14_4271_b2a4_aabaf406ef38" type="QString"/>
+    <Option name="sortie" value="/Users/jeremy/Downloads/Description.html" type="QString"/>
+  </Option>
+  <Option name="groupBoxes"/>
+  <Option name="help"/>
+  <Option name="internal_version" value="Version2" type="QString"/>
+  <Option name="modelVariables"/>
+  <Option name="model_group" value="" type="QString"/>
+  <Option name="model_name" value="Générer un texte depuis les couches CrModel" type="QString"/>
+  <Option name="parameterDefinitions" type="Map">
+    <Option name="branches" type="Map">
+      <Option name="data_types"/>
+      <Option name="default" type="invalid"/>
+      <Option name="defaultGui" type="invalid"/>
+      <Option name="description" value="Branches" type="QString"/>
+      <Option name="flags" value="0" type="int"/>
+      <Option name="help" value="" type="QString"/>
+      <Option name="metadata"/>
+      <Option name="name" value="branches" type="QString"/>
+      <Option name="parameter_type" value="vector" type="QString"/>
+    </Option>
+    <Option name="carrefour" type="Map">
+      <Option name="data_types"/>
+      <Option name="default" type="invalid"/>
+      <Option name="defaultGui" type="invalid"/>
+      <Option name="description" value="Carrefour" type="QString"/>
+      <Option name="flags" value="0" type="int"/>
+      <Option name="help" value="" type="QString"/>
+      <Option name="metadata"/>
+      <Option name="name" value="carrefour" type="QString"/>
+      <Option name="parameter_type" value="vector" type="QString"/>
+    </Option>
+    <Option name="crossings" type="Map">
+      <Option name="data_types" type="List">
+        <Option value="1" type="int"/>
+      </Option>
+      <Option name="default" type="invalid"/>
+      <Option name="defaultGui" type="invalid"/>
+      <Option name="description" value="Crossings" type="QString"/>
+      <Option name="flags" value="0" type="int"/>
+      <Option name="help" value="" type="QString"/>
+      <Option name="metadata"/>
+      <Option name="name" value="crossings" type="QString"/>
+      <Option name="parameter_type" value="vector" type="QString"/>
+    </Option>
+    <Option name="sortie" type="Map">
+      <Option name="create_by_default" value="false" type="bool"/>
+      <Option name="default" type="invalid"/>
+      <Option name="defaultGui" type="invalid"/>
+      <Option name="description" value="Sortie" type="QString"/>
+      <Option name="file_filter" value="Tous les fichiers (*.*)" type="QString"/>
+      <Option name="flags" value="8" type="int"/>
+      <Option name="help" value="" type="QString"/>
+      <Option name="metadata" type="Map">
+        <Option name="_modelChildId" value="pyrocessing:pythonalgorithm_1" type="QString"/>
+        <Option name="_modelChildOutputName" value="Sortie" type="QString"/>
+        <Option name="_modelChildProvider" value="pyrocessing" type="QString"/>
+      </Option>
+      <Option name="name" value="sortie" type="QString"/>
+      <Option name="parameter_type" value="fileDestination" type="QString"/>
+      <Option name="supports_non_file_outputs" value="true" type="bool"/>
+    </Option>
+  </Option>
+  <Option name="parameterOrder"/>
+  <Option name="parameters" type="Map">
+    <Option name="branches" type="Map">
+      <Option name="color" value="" type="QString"/>
+      <Option name="comment" type="Map">
+        <Option name="color" value="" type="QString"/>
+        <Option name="component_description" value="" type="QString"/>
+        <Option name="component_height" value="60" type="double"/>
+        <Option name="component_pos_x" value="1266.6666666666665" type="double"/>
+        <Option name="component_pos_y" value="147" type="double"/>
+        <Option name="component_width" value="100" type="double"/>
+        <Option name="outputs_collapsed" value="true" type="bool"/>
+        <Option name="parameters_collapsed" value="true" type="bool"/>
+      </Option>
+      <Option name="component_description" value="branches" type="QString"/>
+      <Option name="component_height" value="30" type="double"/>
+      <Option name="component_pos_x" value="682.6666666666665" type="double"/>
+      <Option name="component_pos_y" value="145.33333333333334" type="double"/>
+      <Option name="component_width" value="200" type="double"/>
+      <Option name="name" value="branches" type="QString"/>
+      <Option name="outputs_collapsed" value="true" type="bool"/>
+      <Option name="parameters_collapsed" value="true" type="bool"/>
+    </Option>
+    <Option name="carrefour" type="Map">
+      <Option name="color" value="" type="QString"/>
+      <Option name="comment" type="Map">
+        <Option name="color" value="" type="QString"/>
+        <Option name="component_description" value="" type="QString"/>
+        <Option name="component_height" value="60" type="double"/>
+        <Option name="component_pos_x" value="457.3333333333333" type="double"/>
+        <Option name="component_pos_y" value="283" type="double"/>
+        <Option name="component_width" value="100" type="double"/>
+        <Option name="outputs_collapsed" value="true" type="bool"/>
+        <Option name="parameters_collapsed" value="true" type="bool"/>
+      </Option>
+      <Option name="component_description" value="carrefour" type="QString"/>
+      <Option name="component_height" value="30" type="double"/>
+      <Option name="component_pos_x" value="361.3333333333333" type="double"/>
+      <Option name="component_pos_y" value="137.33333333333334" type="double"/>
+      <Option name="component_width" value="200" type="double"/>
+      <Option name="name" value="carrefour" type="QString"/>
+      <Option name="outputs_collapsed" value="true" type="bool"/>
+      <Option name="parameters_collapsed" value="true" type="bool"/>
+    </Option>
+    <Option name="crossings" type="Map">
+      <Option name="color" value="" type="QString"/>
+      <Option name="comment" type="Map">
+        <Option name="color" value="" type="QString"/>
+        <Option name="component_description" value="" type="QString"/>
+        <Option name="component_height" value="60" type="double"/>
+        <Option name="component_pos_x" value="1369.3333333333333" type="double"/>
+        <Option name="component_pos_y" value="167" type="double"/>
+        <Option name="component_width" value="100" type="double"/>
+        <Option name="outputs_collapsed" value="true" type="bool"/>
+        <Option name="parameters_collapsed" value="true" type="bool"/>
+      </Option>
+      <Option name="component_description" value="crossings" type="QString"/>
+      <Option name="component_height" value="30" type="double"/>
+      <Option name="component_pos_x" value="994.6666666666666" type="double"/>
+      <Option name="component_pos_y" value="142.66666666666666" type="double"/>
+      <Option name="component_width" value="200" type="double"/>
+      <Option name="name" value="crossings" type="QString"/>
+      <Option name="outputs_collapsed" value="true" type="bool"/>
+      <Option name="parameters_collapsed" value="true" type="bool"/>
+    </Option>
+  </Option>
+</Option>
